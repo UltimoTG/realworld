@@ -1,10 +1,14 @@
 # RealWorld API Spec
 
+If the backend is about to run on a different host/port than the frontend, make sure to handle `OPTIONS` too and return correct `Access-Control-Allow-Origin` and `Access-Control-Allow-Headers` (e.g. `Content-Type`).
+
 ### Authentication Header:
 
 `Authorization: Token jwt.token.here`
 
 ## JSON Objects returned by API:
+
+Make sure the right content type like `Content-Type: application/json; charset=utf-8` is correctly returned.
 
 ### Users (for authentication)
 
@@ -42,6 +46,7 @@
     "title": "How to train your dragon",
     "description": "Ever wonder how?",
     "body": "It takes a Jacobian",
+    "tagList": ["dragons", "training"],
     "createdAt": "2016-02-18T03:22:56.637Z",
     "updatedAt": "2016-02-18T03:48:35.824Z",
     "favorited": false,
@@ -61,9 +66,10 @@
 ```JSON
 {
   "articles":[{
-    "description": "Ever wonder how?",
     "slug": "how-to-train-your-dragon",
     "title": "How to train your dragon",
+    "description": "Ever wonder how?",
+    "body": "It takes a Jacobian",
     "tagList": ["dragons", "training"],
     "createdAt": "2016-02-18T03:22:56.637Z",
     "updatedAt": "2016-02-18T03:48:35.824Z",
@@ -76,9 +82,11 @@
       "following": false
     }
   }, {
-    "description": "So toothless",
+    
     "slug": "how-to-train-your-dragon-2",
     "title": "How to train your dragon 2",
+    "description": "So toothless",
+    "body": "It a dragon",
     "tagList": ["dragons", "training"],
     "createdAt": "2016-02-18T03:22:56.637Z",
     "updatedAt": "2016-02-18T03:48:35.824Z",
@@ -95,14 +103,15 @@
 }
 ```
 
-### Single comment
+### Single Comment
 
 ```JSON
 {
   "comment": {
     "id": 1,
-    "body": "It takes a Jacobian",
     "createdAt": "2016-02-18T03:22:56.637Z",
+    "updatedAt": "2016-02-18T03:22:56.637Z",
+    "body": "It takes a Jacobian",
     "author": {
       "username": "jake",
       "bio": "I work at statefarm",
@@ -113,14 +122,15 @@
 }
 ```
 
-### Multiple comments
+### Multiple Comments
 
 ```JSON
 {
   "comments": [{
     "id": 1,
-    "body": "It takes a Jacobian",
     "createdAt": "2016-02-18T03:22:56.637Z",
+    "updatedAt": "2016-02-18T03:22:56.637Z",
+    "body": "It takes a Jacobian",
     "author": {
       "username": "jake",
       "bio": "I work at statefarm",
@@ -289,7 +299,7 @@ Limit number of articles (default is 20):
 
 `?limit=20`
 
-Offset/skip number of articles:
+Offset/skip number of articles (default is 0):
 
 `?offset=0`
 
@@ -297,7 +307,7 @@ Authentication optional, will return [multiple articles](#multiple-articles), or
 
 
 
-### Feed articles
+### Feed Articles
 
 `GET /api/articles/feed`
 
@@ -306,7 +316,7 @@ Can also take `limit` and `offset` query parameters like [List Articles](#list-a
 Authentication required, will return [multiple articles](#multiple-articles) created by followed users, ordered by most recent first.
 
 
-### Retrieve Article
+### Get Article
 
 `GET /api/articles/:slug`
 
@@ -337,7 +347,7 @@ Optional fields: `tagList` as an array of Strings
 
 
 
-### Update article
+### Update Article
 
 `PUT /api/articles/:slug`
 
@@ -358,8 +368,15 @@ Optional fields: `title`, `description`, `body`
 The `slug` also gets updated when the `title` is changed
 
 
+### Delete Article
 
-### Add comments to an article
+`DELETE /api/articles/:slug`
+
+Authentication required
+
+
+
+### Add Comments to an Article
 
 `POST /api/articles/:slug/comments`
 
@@ -375,11 +392,11 @@ Example request body:
 
 Authentication required, returns the created [Comment](#single-comment)
 
-Required fields: `body`
+Required field: `body`
 
 
 
-### Get comments from an article
+### Get Comments from an Article
 
 `GET /api/articles/:slug/comments`
 
@@ -387,7 +404,7 @@ Authentication optional, returns [multiple comments](#multiple-comments)
 
 
 
-### Delete a comment
+### Delete Comment
 
 `DELETE /api/articles/:slug/comments/:id`
 
@@ -395,7 +412,7 @@ Authentication required
 
 
 
-### Favorite an article
+### Favorite Article
 
 `POST /api/articles/:slug/favorite`
 
@@ -405,7 +422,7 @@ No additional parameters required
 
 
 
-### Unfavorite an article
+### Unfavorite Article
 
 `DELETE /api/articles/:slug/favorite`
 
@@ -415,7 +432,7 @@ No additional parameters required
 
 
 
-### Get tags
+### Get Tags
 
 `GET /api/tags`
 
